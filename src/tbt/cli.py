@@ -2,12 +2,25 @@ import click
 
 
 @click.group()
-def main() -> None:
+@click.option(
+    "--source-dir",
+    required=True,
+    type=click.Path(exists=True, file_okay=False),
+    help="Path to the catalog directory (contains raw.yml, silver/, gold/).",
+)
+@click.option(
+    "--target-db",
+    required=True,
+    type=click.Path(),
+    help="Path to the DuckDB database file to create or update.",
+)
+@click.pass_context
+def main(ctx: click.Context, source_dir: str, target_db: str) -> None:
     """tbt — tiny bronze transformer.
 
-    Runs a local, file-based layered data warehouse backed by DuckDB.
+    Applies a catalog definition to a DuckDB database.
 
-    The catalog/ directory contains three things:
+    The catalog directory contains three things:
 
     \b
       raw.yml          declares CSV files to load into the bronze layer
@@ -17,11 +30,21 @@ def main() -> None:
     Each SQL file is a SELECT that references other tables as
     <layer>.<table> (e.g. FROM silver.customers). tbt resolves the
     dependency order automatically and materialises every table in sequence.
+
+    \b
+    Examples
+    --------
+      $ tbt --source-dir catalog/ --target-db warehouse.db ls
+      $ tbt --source-dir catalog/ --target-db warehouse.db run
     """
+    ctx.ensure_object(dict)
+    ctx.obj["source_dir"] = source_dir
+    ctx.obj["target_db"] = target_db
 
 
 @main.command()
-def ls() -> None:
+@click.pass_obj
+def ls(obj: dict) -> None:
     """List all tables known to the catalog.
 
     Prints one line per table in the form <layer>.<table>, ordered by
@@ -30,7 +53,7 @@ def ls() -> None:
     \b
     Example
     -------
-      $ tbt ls
+      $ tbt --source-dir catalog/ --target-db warehouse.db ls
       bronze.customers
       bronze.invoices
       silver.customers
@@ -49,7 +72,8 @@ def ls() -> None:
         "(e.g. gold.customer_revenue). Omit to run everything."
     ),
 )
-def run(filter_: str | None) -> None:
+@click.pass_obj
+def run(obj: dict, filter_: str | None) -> None:
     """Materialise tables and print their results.
 
     Without --filter every table is built in dependency order.
@@ -59,8 +83,8 @@ def run(filter_: str | None) -> None:
     \b
     Examples
     --------
-      $ tbt run                              # run everything
-      $ tbt run --filter gold               # run all gold tables
-      $ tbt run --filter gold.top_genres    # run one table
+      $ tbt --source-dir catalog/ --target-db warehouse.db run
+      $ tbt --source-dir catalog/ --target-db warehouse.db run --filter gold
+      $ tbt --source-dir catalog/ --target-db warehouse.db run --filter gold.top_genres
     """
     print(f"not implemented (filter={filter_!r})")

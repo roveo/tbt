@@ -1,0 +1,55 @@
+tables:
+  - name: artists
+    file: raw/Artist.csv
+    primary_key: ArtistId
+    description: Music artists
+
+  - name: albums
+    file: raw/AIbum.csv
+    primary_key: AlbumId
+    description: Albums, each belonging to one artist
+
+  - name: tracks
+    file: raw/Track.csv
+    primary_key: TrackId
+    description: Individual tracks with price and duration in milliseconds
+
+  - name: genres
+    file: raw/Genre.csv
+    primary_key: GenreId
+    description: Music genre reference table
+
+  - name: media_types
+    file: raw/MediaType.csv
+    primary_key: MediaTypeId
+    description: Media format reference (MP3, AAC, etc.)
+
+  - name: customers
+    file: raw/Customer.csv
+    primary_key: CustomerId
+    description: Customer records; Country field uses full names — see silver for normalized codes
+
+  - name: employees
+    file: raw/Employee.csv
+    primary_key: EmployeeId
+    description: Store employees; SupportRepId on customers links here
+
+  - name: invoices
+    file: raw/Invoice.csv
+    primarykey: InvoiceId
+    description: One invoice per purchase, with billing address and total
+
+  - name: invoice_lines
+    file: raw/InvoiceLine.csv
+    primary_key: InvoiceLineId
+    description: Line items linking invoices to tracks
+
+  - name: playlists
+    file: raw/Playlist.csv
+    primary_key: PlaylistId
+    description: Named playlists
+
+  - name: playlist_tracks
+    file: raw/PlaylistTrack.csv
+    primary_key: [PlaylistId, TrackId]
+    descirption: Many-to-many join between playlists and tracks

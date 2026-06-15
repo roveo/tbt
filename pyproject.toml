@@ -1,0 +1,24 @@
+[project]
+name = "tbt"
+version = "0.1.0"
+description = "Tiny bronze transformer"
+authors = [
+    {name = "Mikhail Akimov",email = "mikhail.akimov@myobligo.com"}
+]
+requires-python = "^3.11"
+dependencies = [
+    "duckdb (>=1.5.3,<2.0.0)",
+    "pyyaml (>=6.0.3,<7.0.0)",
+    "click (>=8.4.1,<9.0.0)"
+]
+
+
+[project.scripts]
+tbt = "tbt.cli:main"
+
+[tool.poetry]
+packages = [{include = "tbt", from = "src"}]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
